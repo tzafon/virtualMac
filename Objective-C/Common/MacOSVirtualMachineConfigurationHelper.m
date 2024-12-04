@@ -39,17 +39,6 @@ The helper that creates various configuration objects exposed in the `VZVirtualM
     return [[VZMacOSBootLoader alloc] init];
 }
 
-+ (VZMacGraphicsDeviceConfiguration *)createGraphicsDeviceConfiguration
-{
-    VZMacGraphicsDeviceConfiguration *graphicsConfiguration = [[VZMacGraphicsDeviceConfiguration alloc] init];
-    graphicsConfiguration.displays = @[
-        // The system arbitrarily chooses the resolution of the display to be 1920 x 1200.
-        [[VZMacGraphicsDisplayConfiguration alloc] initWithWidthInPixels:1920 heightInPixels:1200 pixelsPerInch:80],
-    ];
-
-    return graphicsConfiguration;
-}
-
 + (VZVirtioBlockDeviceConfiguration *)createBlockDeviceConfiguration
 {
     NSError *error;
@@ -62,6 +51,17 @@ The helper that creates various configuration objects exposed in the `VZVirtualM
     return disk;
 }
 
++ (VZMacGraphicsDeviceConfiguration *)createGraphicsDeviceConfiguration
+{
+    VZMacGraphicsDeviceConfiguration *graphicsConfiguration = [[VZMacGraphicsDeviceConfiguration alloc] init];
+    graphicsConfiguration.displays = @[
+        // The system arbitrarily chooses the resolution of the display to be 1920 x 1200.
+        [[VZMacGraphicsDisplayConfiguration alloc] initWithWidthInPixels:1920 heightInPixels:1200 pixelsPerInch:80],
+    ];
+
+    return graphicsConfiguration;
+}
+
 + (VZVirtioNetworkDeviceConfiguration *)createNetworkDeviceConfiguration
 {
     VZVirtioNetworkDeviceConfiguration *networkConfiguration = [[VZVirtioNetworkDeviceConfiguration alloc] init];
@@ -71,6 +71,21 @@ The helper that creates various configuration objects exposed in the `VZVirtualM
     networkConfiguration.attachment = natAttachment;
 
     return networkConfiguration;
+}
+
++ (VZVirtioSoundDeviceConfiguration *)createSoundDeviceConfiguration
+{
+    VZVirtioSoundDeviceConfiguration *audioDeviceConfiguration = [[VZVirtioSoundDeviceConfiguration alloc] init];
+
+    VZVirtioSoundDeviceInputStreamConfiguration *inputStream = [[VZVirtioSoundDeviceInputStreamConfiguration alloc] init];
+    inputStream.source = [[VZHostAudioInputStreamSource alloc] init];
+
+    VZVirtioSoundDeviceOutputStreamConfiguration *outputStream = [[VZVirtioSoundDeviceOutputStreamConfiguration alloc] init];
+    outputStream.sink = [[VZHostAudioOutputStreamSink alloc] init];
+
+    audioDeviceConfiguration.streams = @[ inputStream, outputStream ];
+
+    return audioDeviceConfiguration;
 }
 
 + (VZPointingDeviceConfiguration *)createPointingDeviceConfiguration

@@ -27,17 +27,13 @@ The helper class to install a macOS virtual machine.
 
 static void createVMBundle(void)
 {
-    int fd = mkdir([getVMBundleURL() fileSystemRepresentation], S_IRWXU | S_IRWXG | S_IRWXO);
-    if (fd == -1) {
-        if (errno == EEXIST) {
-            abortWithErrorMessage(@"Failed to create VM.bundle: the base directory already exists.");
-        }
-        abortWithErrorMessage(@"Failed to create VM.bundle.");
-    }
-
-    int result = close(fd);
-    if (result) {
-        abortWithErrorMessage(@"Failed to close VM.bundle.");
+    NSError *error;
+    BOOL bundleCreateResult = [[NSFileManager defaultManager] createDirectoryAtURL:getVMBundleURL()
+                                                       withIntermediateDirectories:NO
+                                                                        attributes:nil
+                                                                             error:&error];
+    if (!bundleCreateResult) {
+        abortWithErrorMessage([error description]);
     }
 }
 
@@ -110,9 +106,12 @@ static void createDiskImage(void)
     createDiskImage();
 
     configuration.bootLoader = [MacOSVirtualMachineConfigurationHelper createBootLoader];
+
+    configuration.audioDevices = @[ [MacOSVirtualMachineConfigurationHelper createSoundDeviceConfiguration] ];
     configuration.graphicsDevices = @[ [MacOSVirtualMachineConfigurationHelper createGraphicsDeviceConfiguration] ];
-    configuration.storageDevices = @[ [MacOSVirtualMachineConfigurationHelper createBlockDeviceConfiguration] ];
     configuration.networkDevices = @[ [MacOSVirtualMachineConfigurationHelper createNetworkDeviceConfiguration] ];
+    configuration.storageDevices = @[ [MacOSVirtualMachineConfigurationHelper createBlockDeviceConfiguration] ];
+
     configuration.pointingDevices = @[ [MacOSVirtualMachineConfigurationHelper createPointingDeviceConfiguration] ];
     configuration.keyboards = @[ [MacOSVirtualMachineConfigurationHelper createKeyboardConfiguration] ];
     

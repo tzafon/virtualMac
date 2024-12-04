@@ -35,6 +35,14 @@ struct MacOSVirtualMachineConfigurationHelper {
         return VZMacOSBootLoader()
     }
 
+    static func createBlockDeviceConfiguration() -> VZVirtioBlockDeviceConfiguration {
+        guard let diskImageAttachment = try? VZDiskImageStorageDeviceAttachment(url: diskImageURL, readOnly: false) else {
+            fatalError("Failed to create Disk image.")
+        }
+        let disk = VZVirtioBlockDeviceConfiguration(attachment: diskImageAttachment)
+        return disk
+    }
+
     static func createGraphicsDeviceConfiguration() -> VZMacGraphicsDeviceConfiguration {
         let graphicsConfiguration = VZMacGraphicsDeviceConfiguration()
         graphicsConfiguration.displays = [
@@ -45,14 +53,6 @@ struct MacOSVirtualMachineConfigurationHelper {
         return graphicsConfiguration
     }
 
-    static func createBlockDeviceConfiguration() -> VZVirtioBlockDeviceConfiguration {
-        guard let diskImageAttachment = try? VZDiskImageStorageDeviceAttachment(url: diskImageURL, readOnly: false) else {
-            fatalError("Failed to create Disk image.")
-        }
-        let disk = VZVirtioBlockDeviceConfiguration(attachment: diskImageAttachment)
-        return disk
-    }
-
     static func createNetworkDeviceConfiguration() -> VZVirtioNetworkDeviceConfiguration {
         let networkDevice = VZVirtioNetworkDeviceConfiguration()
         networkDevice.macAddress = VZMACAddress(string: "d6:a7:58:8e:78:d4")!
@@ -61,6 +61,19 @@ struct MacOSVirtualMachineConfigurationHelper {
         networkDevice.attachment = networkAttachment
 
         return networkDevice
+    }
+
+    static func createSoundDeviceConfiguration() -> VZVirtioSoundDeviceConfiguration {
+        let audioConfiguration = VZVirtioSoundDeviceConfiguration()
+
+        let inputStream = VZVirtioSoundDeviceInputStreamConfiguration()
+        inputStream.source = VZHostAudioInputStreamSource()
+
+        let outputStream = VZVirtioSoundDeviceOutputStreamConfiguration()
+        outputStream.sink = VZHostAudioOutputStreamSink()
+
+        audioConfiguration.streams = [inputStream, outputStream]
+        return audioConfiguration
     }
 
     static func createPointingDeviceConfiguration() -> VZPointingDeviceConfiguration {

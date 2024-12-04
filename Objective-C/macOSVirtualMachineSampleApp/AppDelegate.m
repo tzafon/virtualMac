@@ -82,10 +82,14 @@ The app delegate that sets up and starts the virtual machine.
     configuration.platform = [self createMacPlatformConfiguration];
     configuration.CPUCount = [MacOSVirtualMachineConfigurationHelper computeCPUCount];
     configuration.memorySize = [MacOSVirtualMachineConfigurationHelper computeMemorySize];
+
     configuration.bootLoader = [MacOSVirtualMachineConfigurationHelper createBootLoader];
+
+    configuration.audioDevices = @[ [MacOSVirtualMachineConfigurationHelper createSoundDeviceConfiguration] ];
     configuration.graphicsDevices = @[ [MacOSVirtualMachineConfigurationHelper createGraphicsDeviceConfiguration] ];
-    configuration.storageDevices = @[ [MacOSVirtualMachineConfigurationHelper createBlockDeviceConfiguration] ];
     configuration.networkDevices = @[ [MacOSVirtualMachineConfigurationHelper createNetworkDeviceConfiguration] ];
+    configuration.storageDevices = @[ [MacOSVirtualMachineConfigurationHelper createBlockDeviceConfiguration] ];
+
     configuration.pointingDevices = @[ [MacOSVirtualMachineConfigurationHelper createPointingDeviceConfiguration] ];
     configuration.keyboards = @[ [MacOSVirtualMachineConfigurationHelper createKeyboardConfiguration] ];
     

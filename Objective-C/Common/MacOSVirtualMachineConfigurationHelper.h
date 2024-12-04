@@ -23,14 +23,12 @@ The helper that creates various configuration objects exposed in the `VZVirtualM
 
 + (VZMacOSBootLoader *)createBootLoader;
 
-+ (VZMacGraphicsDeviceConfiguration *)createGraphicsDeviceConfiguration;
-
 + (VZVirtioBlockDeviceConfiguration *)createBlockDeviceConfiguration;
-
++ (VZMacGraphicsDeviceConfiguration *)createGraphicsDeviceConfiguration;
 + (VZVirtioNetworkDeviceConfiguration *)createNetworkDeviceConfiguration;
++ (VZVirtioSoundDeviceConfiguration *)createSoundDeviceConfiguration;
 
 + (VZPointingDeviceConfiguration *)createPointingDeviceConfiguration;
-
 + (VZKeyboardConfiguration *)createKeyboardConfiguration;
 
 @end

@@ -94,9 +94,12 @@ class MacOSVirtualMachineInstaller: NSObject {
         createDiskImage()
 
         virtualMachineConfiguration.bootLoader = MacOSVirtualMachineConfigurationHelper.createBootLoader()
+
+        virtualMachineConfiguration.audioDevices = [MacOSVirtualMachineConfigurationHelper.createSoundDeviceConfiguration()]
         virtualMachineConfiguration.graphicsDevices = [MacOSVirtualMachineConfigurationHelper.createGraphicsDeviceConfiguration()]
-        virtualMachineConfiguration.storageDevices = [MacOSVirtualMachineConfigurationHelper.createBlockDeviceConfiguration()]
         virtualMachineConfiguration.networkDevices = [MacOSVirtualMachineConfigurationHelper.createNetworkDeviceConfiguration()]
+        virtualMachineConfiguration.storageDevices = [MacOSVirtualMachineConfigurationHelper.createBlockDeviceConfiguration()]
+
         virtualMachineConfiguration.pointingDevices = [MacOSVirtualMachineConfigurationHelper.createPointingDeviceConfiguration()]
         virtualMachineConfiguration.keyboards = [MacOSVirtualMachineConfigurationHelper.createKeyboardConfiguration()]
 
@@ -132,17 +135,10 @@ class MacOSVirtualMachineInstaller: NSObject {
     }
 
     private func createVMBundle() {
-        let bundleFd = mkdir(vmBundlePath, S_IRWXU | S_IRWXG | S_IRWXO)
-        if bundleFd == -1 {
-            if errno == EEXIST {
-                fatalError("Failed to create VM.bundle: the base directory already exists.")
-            }
-            fatalError("Failed to create VM.bundle.")
-        }
-
-        let result = close(bundleFd)
-        if result != 0 {
-            fatalError("Failed to close VM.bundle.")
+        do {
+            try FileManager.default.createDirectory(atPath: vmBundlePath, withIntermediateDirectories: false)
+        } catch {
+            fatalError("Failed to create “VM.bundle.”")
         }
     }
 
