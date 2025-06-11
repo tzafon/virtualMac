@@ -142,8 +142,35 @@ class MacOSVirtualMachineInstaller: NSObject {
         }
     }
 
-    // Create an empty disk image for the virtual machine.
-    private func createDiskImage() {
+    // Virtualization framework supports two disk image formats:
+    // * RAW disk image: a file that has a 1-to-1 mapping between the offsets in the file and the offsets in the VM disk.
+    //   The logical size of a RAW disk image is the size of the disk itself.
+    //
+    //   In case the image file is stored on an APFS volume, the file will take less space
+    //   thanks to the sparse files feature of APFS.
+    //
+    // * ASIF disk image: A sparse image format. You can transfer ASIF files more efficiently between hosts or disks
+    //   as their sparsity doesn’t depend on the host’s filesystem capabilities.
+    //
+    // The framework supports ASIF since macOS 16.
+    @available(macOS 16.0, *)
+    private func createASIFDiskImage() {
+        do {
+            let process = try Process.run(URL(fileURLWithPath: "/usr/sbin/diskutil"),
+                                          arguments: ["image", "create", "blank",
+                                                      "--fs", "none", "--format",
+                                                      "ASIF", "--size", "128GiB",
+                                                      diskImageURL.path])
+            process.waitUntilExit()
+            if process.terminationStatus != 0 {
+                fatalError("Failed to create the disk image.")
+            }
+        } catch {
+            fatalError("Failed to launch diskutil: \(error.localizedDescription)")
+        }
+    }
+
+    private func createRAWDiskImage() {
         let diskFd = open(diskImageURL.path, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)
         if diskFd == -1 {
             fatalError("Cannot create disk image.")
@@ -158,6 +185,14 @@ class MacOSVirtualMachineInstaller: NSObject {
         result = close(diskFd)
         if result != 0 {
             fatalError("Failed to close the disk image.")
+        }
+    }
+
+    private func createDiskImage() {
+        if #available(macOS 16.0, *) {
+            createASIFDiskImage()
+        } else {
+            createRAWDiskImage()
         }
     }
 }

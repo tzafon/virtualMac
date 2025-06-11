@@ -37,8 +37,36 @@ static void createVMBundle(void)
     }
 }
 
-// Create an empty disk image for the virtual machine.
-static void createDiskImage(void)
+// Virtualization framework supports two disk image formats:
+// * RAW disk image: a file that has a 1-to-1 mapping between the offsets in the file and the offsets in the VM disk.
+//   The logical size of a RAW disk image is the size of the disk itself.
+//
+//   In case the image file is stored on an APFS volume, the file will take less space
+//   thanks to the sparse files feature of APFS.
+//
+// * ASIF disk image: A sparse image format. You can transfer ASIF files more efficiently between hosts or disks
+//   as their sparsity doesn’t depend on the host’s filesystem capabilities.
+//
+// The framework supports ASIF since macOS 16.
+static void createASIFDiskImage(void)
+{
+    NSError *error = nil;
+    NSTask *task = [NSTask launchedTaskWithExecutableURL:[NSURL fileURLWithPath:@"/usr/sbin/diskutil"]
+                                               arguments:@[@"image", @"create", @"blank", @"--fs", @"none", @"--format", @"ASIF", @"--size", @"128GiB", getDiskImageURL().path]
+                                                   error:&error
+                                      terminationHandler:nil];
+
+    if (error != nil) {
+        abortWithErrorMessage([NSString stringWithFormat:@"Failed to launch diskutil: %@", error]);
+    }
+
+    [task waitUntilExit];
+    if (task.terminationStatus != 0) {
+        abortWithErrorMessage(@"Disk image creation failed.");
+    }
+}
+
+static void createRAWDiskImage(void)
 {
     int fd = open([getDiskImageURL() fileSystemRepresentation], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (fd == -1) {
@@ -54,6 +82,15 @@ static void createDiskImage(void)
     result = close(fd);
     if (result) {
         abortWithErrorMessage(@"Failed to close the disk image.");
+    }
+}
+
+static void createDiskImage(void)
+{
+    if (@available(macOS 16.0, *)) {
+        createASIFDiskImage();
+    } else {
+        createRAWDiskImage();
     }
 }
 
