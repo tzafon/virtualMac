@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "macOS Virtual Machine Launcher"
-echo "=============================="
+echo "macOS Virtual Machine Launcher (with CGEvent Automation)"
+echo "========================================================"
 
 # Check if VM.bundle exists and has required files
 if [ ! -d "$HOME/VM.bundle" ]; then
@@ -25,7 +25,14 @@ if pgrep -f "InstallationTool" > /dev/null; then
     exit 1
 fi
 
-echo "🚀 Launching macOS Virtual Machine..."
+echo "🚀 Launching macOS Virtual Machine with built-in CGEvent automation..."
+echo ""
+echo "🤖 Automation Features:"
+echo "   • Automatically opens Finder after VM starts (5 seconds)"
+echo "   • Built-in CGEvent controller for programmatic interaction"
+echo "   • Smart coordinate conversion from VM space to screen space"
+echo "   • Mouse clicks, keyboard events, and text typing capabilities"
+echo ""
 
-# Launch the VM app
-/Users/atul/Library/Developer/Xcode/DerivedData/macOSVirtualMachineSampleApp-gmzgycuzfrjlczdhyfheebsnxydz/Build/Products/Release/macOSVirtualMachineSampleApp.app/Contents/MacOS/macOSVirtualMachineSampleApp 
+# Launch the VM app with CGEvent automation built-in
+/Users/atul/Library/Developer/Xcode/DerivedData/macOSVirtualMachineSampleApp-gmzgycuzfrjlczdhyfheebsnxydz/Build/Products/Release/macOSVirtualMachineSampleApp.app/Contents/MacOS/macOSVirtualMachineSampleApp
