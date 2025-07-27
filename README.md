@@ -57,3 +57,57 @@ vm-shared /Volumes/HostShared virtiofs rw,nofail 0 0
 
 
 Once on the VM. Copy .dmg disk file to the shared dir and reupload using Carbon Copy Creator 
+
+
+## Programmatic VM Controls
+
+This project includes several tools for programmatically controlling the VM:
+
+### VM Control CLI
+Use the interactive command-line interface to control the VM:
+
+```bash
+swift vm_control.swift
+```
+
+Available commands:
+- `click(x,y)` - Left click at coordinates
+- `rightclick(x,y)` - Right click at coordinates  
+- `type('text')` - Type text into the VM
+- `key('name')` - Press keys (enter, space, escape, up, down, left, right)
+- `cmd('key')` - Press Cmd+key combinations
+- `help` - Show available commands
+- `quit` - Exit the CLI
+
+### AI Agent
+Launch the AI-powered VM assistant:
+
+```bash
+# Set your OpenAI API key
+export OPENAI_API_KEY="your-api-key-here"
+
+# Launch the AI agent
+./launch_ai_agent.sh
+```
+
+The AI agent can:
+- Take screenshots of the VM
+- Analyze the current state
+- Execute commands automatically
+- Provide intelligent assistance
+
+### VM Control Server
+The VM automatically starts a control server that listens for commands. You can also use the underlying Swift classes directly in your own code:
+
+```swift
+// Example usage
+let controller = VMRemoteController()
+controller.sendCommand("click(100,200)")
+controller.sendCommand("type('Hello VM!')")
+```
+
+### Launch Scripts
+- `./launch_vm.sh` - Start the VM application
+- `./launch_ai_agent.sh` - Start the AI agent with VM controls
+
+**Note:** Make sure the VM is running before using the control tools.
