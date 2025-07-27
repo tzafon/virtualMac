@@ -53,3 +53,7 @@ bashsudo mount -t virtiofs vm-shared /Volumes/HostShared
 3. Auto-mount on Boot (Optional)
 Add to /etc/fstab:
 vm-shared /Volumes/HostShared virtiofs rw,nofail 0 0
+
+
+
+Once on the VM. Copy .dmg disk file to the shared dir and reupload using Carbon Copy Creator 
