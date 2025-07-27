@@ -87,6 +87,31 @@ struct MacOSVirtualMachineConfigurationHelper {
             return VZUSBKeyboardConfiguration()
         }
     }
+    
+    static func createSharedDirectoryConfiguration() -> VZVirtioFileSystemDeviceConfiguration {
+        let sharedDirPath = NSHomeDirectory() + "/VM_Shared"
+        let sharedDirURL = URL(fileURLWithPath: sharedDirPath)
+        
+        print("🔗 Setting up shared directory:")
+        print("   Host path: \(sharedDirPath)")
+        print("   Tag: vm-shared")
+        print("   Note: For optimal macOS guest support, use VZSharedDirectory when available")
+        
+        // Create directory if it doesn't exist
+        do {
+            try FileManager.default.createDirectory(at: sharedDirURL, withIntermediateDirectories: true)
+            print("✅ Shared directory created/verified at host")
+        } catch {
+            print("❌ Failed to create shared directory: \(error)")
+        }
+        
+        let sharedDirectory = VZSharedDirectory(url: sharedDirURL, readOnly: false)
+        let sharedDirectoryDevice = VZVirtioFileSystemDeviceConfiguration(tag: "vm-shared")
+        sharedDirectoryDevice.share = VZSingleDirectoryShare(directory: sharedDirectory)
+        
+        print("✅ VirtioFS device configured (works with manual mount)")
+        return sharedDirectoryDevice
+    }
 }
 
 #endif
